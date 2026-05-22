@@ -10,4 +10,4 @@ export default async function AuthPage({ params }: { params: Promise<{ path: str
             <AuthView path={path} />
         </main>
     );
-}
+};

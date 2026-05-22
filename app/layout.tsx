@@ -42,16 +42,15 @@ export default function RootLayout({
                 <Link href={"/dashboard"} className="text-sm text-(--muted-foreground)]">
                   Dashboard
                 </Link>
-                <UserButton size="icon"/>
+                <UserButton size="icon" />
               </nav>
             </div>
           </header>
+          
+          <main className="mx-auto flex  w-full max-w-full flex-1 flex-col px-4 py-8">
+            {children}
+          </main>
         </NeonAuthUIProvider>
-
-        <main className="mx-auto flex  w-full max-w-full flex-1 flex-col px-4 py-8">
-          {children}
-        </main>
-
       </body>
     </html>
   );
