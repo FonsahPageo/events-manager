@@ -1,5 +1,25 @@
-import { auth } from '@/lib/auth/server';
 import Link from 'next/link';
+import { auth } from '@/lib/auth/server';
+
+async function getSessionData() {
+  try {
+    // Use relative URL - the Route Handler will have access to cookies
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const res = await fetch(`${baseUrl}/api/auth/get-session`, {
+      method: 'GET',
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      return null;
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Failed to get session:', error);
+    return null;
+  }
+}
 
 // Server components using auth methods must be rendered dynamically
 export const dynamic = 'force-dynamic';

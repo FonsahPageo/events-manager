@@ -1,11 +1,14 @@
-import { getSession } from '@/lib/auth/server';
-import { NextRequest } from 'next/server';
+import { auth } from '@/lib/auth/server';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const session = await getSession();
-    return Response.json(session);
+    const { data: session } = await auth.getSession();
+    return Response.json({ data: session });
   } catch (error) {
-    return Response.json({ error: 'Failed to get session' }, { status: 500 });
+    console.error('[GET /api/auth/get-session] Error:', error);
+    return Response.json(
+      { error: 'Failed to get session' },
+      { status: 500 }
+    );
   }
 }

@@ -30,7 +30,7 @@ export async function createEventAction(formData: FormData) {
     try {
         const created = await prisma.event.create({
             data: {
-                ownerUserId: userId,
+                ownerUserId: userId!,
                 title: input.title,
                 description: input.description,
                 location: input.location,
@@ -41,6 +41,5 @@ export async function createEventAction(formData: FormData) {
     } catch (err) {
         console.error(err);
     }
-
-    
 }
+
