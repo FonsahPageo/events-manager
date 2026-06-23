@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { Form } from "@/components/ui/form";
+import { createInviteLinkAction } from "@/lib/actions/events";
 
 export default async function EventDetailContent({
     userId,
@@ -44,6 +45,14 @@ export default async function EventDetailContent({
         maybeCount: counts.maybeCount,
     };
 
+    const createInviteActionForEvent = createInviteLinkAction.bind(
+        null,
+        event.id,
+    );
+
+    const inviteUrl = event.inviteToken
+        ? `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/invite/${event.inviteToken}`
+        : null;
 
     return (
         <div className="flex flex-col gap-6">
@@ -76,7 +85,28 @@ export default async function EventDetailContent({
                 <Badge variant="outline">Not Going : {event.notGoingCount}</Badge>
             </div>
 
-            
+            <Card>
+                <CardHeader>Invite Link</CardHeader>
+                <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                        Share this link with guests so that they can RSVP without creating an account
+                    </p>
+
+                    {inviteUrl ? (
+                        <div className="rounded-md border border-[var(--border)] bg-[var(--surface)] p-3 text-sm">
+                            {inviteUrl}
+                        </div>
+                    ) : (
+                        <p className="text-sm text-muted-foreground">
+                            No invite link generated yet.
+                        </p>
+                    )}
+
+                    <Form action={createInviteActionForEvent}>
+                        <Button>Generate Link</Button>
+                    </Form>
+                </CardContent>
+            </Card>
         </div>
     );
 }

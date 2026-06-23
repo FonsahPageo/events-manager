@@ -43,3 +43,24 @@ export async function createEventAction(formData: FormData) {
     }
 }
 
+export async function createInviteLinkAction(eventId: string) {
+    const session = await auth.getSession();
+    const userId = session.data?.user.id;
+
+    const ownedByUser = await prisma.event.findFirst({
+        where: {id: eventId, ownerUserId: userId},
+        select: { id: true},
+    });
+
+    if(!ownedByUser) {
+        throw new Error("Event not found.");
+    }
+
+    const token = crypto.randomUUID().replace(/-/g, "");
+
+    await prisma.eventInvite.upsert({
+        where: { eventId}, 
+        create: {eventId, token},
+        update: {token}
+    });
+}
