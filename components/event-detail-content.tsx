@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { Form } from "@/components/ui/form";
-import { createInviteLinkAction } from "@/lib/actions/events";
+import { InviteLinkForm } from "./invite-link-form";
 
 export default async function EventDetailContent({
     userId,
@@ -44,11 +44,6 @@ export default async function EventDetailContent({
         notGoingCount: counts.notGoingCount,
         maybeCount: counts.maybeCount,
     };
-
-    const createInviteActionForEvent = createInviteLinkAction.bind(
-        null,
-        event.id,
-    );
 
     const inviteUrl = event.inviteToken
         ? `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/invite/${event.inviteToken}`
@@ -102,9 +97,7 @@ export default async function EventDetailContent({
                         </p>
                     )}
 
-                    <Form action={createInviteActionForEvent}>
-                        <Button>Generate Link</Button>
-                    </Form>
+                    <InviteLinkForm eventId={event.id} />
                 </CardContent>
             </Card>
         </div>

@@ -27,9 +27,11 @@ export function AuthWrapper({ children }: { children: React.ReactNode }) {
     // render with the provider once on client
     const Provider = NeonProvider;
     return (
-        <Provider authClient={authClient as any}>
-            {children}
-        </Provider>
+        <div suppressHydrationWarning>
+            <Provider authClient={authClient as any}>
+                {children}
+            </Provider>
+        </div>
     );
 }
 
