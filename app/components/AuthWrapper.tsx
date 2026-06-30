@@ -1,30 +1,24 @@
 'use client';
 
-import dynamic from "next/dynamic";
 import { authClient } from "@/lib/auth/client";
 import { useEffect, useState } from "react";
 
 export function AuthWrapper({ children }: { children: React.ReactNode }) {
     const [isClient, setIsClient] = useState(false);
     const [NeonProvider, setNeonProvider] = useState<any>(null);
-    const [UserButtonComponent, setUserButtonComponent] = useState<any>(null);
 
     useEffect(() => {
         setIsClient(true);
 
-        // dynamically import on the client
         import('@neondatabase/auth/react').then((mod) => {
             setNeonProvider(() => mod.NeonAuthUIProvider);
-            setUserButtonComponent(() => mod.UserButton);
         });
     }, []);
 
-    // return children without auth wrapper on server
     if (!isClient || !NeonProvider) {
         return <>{children}</>;
     }
 
-    // render with the provider once on client
     const Provider = NeonProvider;
     return (
         <div suppressHydrationWarning>

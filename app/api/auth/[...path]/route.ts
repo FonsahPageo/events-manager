@@ -9,7 +9,7 @@ export async function GET(request: NextRequest, context: any) {
     // Handle get-session requests here instead of delegating to Neon
     if (pathname === "/api/auth/get-session") {
         try {
-            const session = await getSession();
+            const { data: session } = await getSession();
             return NextResponse.json(session);
         } catch (error) {
             console.error('[GET /api/auth/get-session] Error:', error);

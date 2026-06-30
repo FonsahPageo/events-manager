@@ -52,8 +52,9 @@ export async function createEventAction(formData: FormData) {
     const userId = session.data?.user.id;
     const input = parseCreateEvent(formData);
 
+    let created;
     try {
-        const created = await prisma.event.create({
+        created = await prisma.event.create({
             data: {
                 ownerUserId: userId!,
                 title: input.title,
@@ -62,50 +63,44 @@ export async function createEventAction(formData: FormData) {
                 eventDate: input.eventDate ? new Date(input.eventDate) : null,
             },
         });
-        redirect(`/events/${created.id}`);
     } catch (err) {
         console.error(err);
+        throw err;
     }
+
+    redirect(`/events/${created.id}`);
 }
 
-export async function createInviteLinkAction(eventId: string) {
-    console.log("createInviteLinkAction called with eventId:", eventId);
+export async function createInviteLinkAction(eventId: string, formData: FormData) {
+    const session = await auth.getSession();
+    const userId = session.data?.user.id;
+
+    if (!userId) {
+        throw new Error("User not authenticated.");
+    }
+
+    const ownedByUser = await prisma.event.findFirst({
+        where: { id: eventId, ownerUserId: userId },
+        select: { id: true },
+    });
+
+    if (!ownedByUser) {
+        throw new Error("Event not found.");
+    }
+
+    const token = crypto.randomUUID().replace(/-/g, "");
+
     try {
-        const session = await auth.getSession();
-        const userId = session.data?.user.id;
-
-        console.log("User ID:", userId);
-
-        if (!userId) {
-            throw new Error("User not authenticated.");
-        }
-
-        const ownedByUser = await prisma.event.findFirst({
-            where: { id: eventId, ownerUserId: userId },
-            select: { id: true },
-        });
-
-        console.log("Owned by user:", ownedByUser);
-
-        if (!ownedByUser) {
-            throw new Error("Event not found.");
-        }
-
-        const token = crypto.randomUUID().replace(/-/g, "");
-        console.log("Generated token:", token);
-
         await prisma.eventInvite.upsert({
             where: { eventId },
             create: { eventId, token },
             update: { token }
         });
-
-        console.log("Redirecting to:", `/events/${eventId}`);
-        redirect(`/events/${eventId}`);
     } catch (error) {
         console.error("Error creating invite link:", error);
         throw error;
     }
+    redirect(`/events/${eventId}`);
 }
 
 export async function submitOrUpdateRsvpAction(

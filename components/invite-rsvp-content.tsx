@@ -1,10 +1,9 @@
-import Link from "next/link";
-import { Button } from "./ui/button";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { notFound } from "next/navigation";
 import { RsvpForm } from "./rsvp-form";
+import { submitOrUpdateRsvpAction } from "@/lib/actions/events";
 
 export async function InviteRsvpContent({
   token,
@@ -40,8 +39,13 @@ export async function InviteRsvpContent({
     eventDate: e.eventDate ? e.eventDate.toISOString() : null,
   };
 
+  const submitRsvpForToken = submitOrUpdateRsvpAction.bind(
+    null,
+    token
+  );
+
   return (
-    <div className="flex flex-1 flex-col gap-6">
+    <div className="mx-auto w-full max-w-2xl">
       <Card>
         <CardHeader className="space-y-3">
           <Badge variant="secondary" className="w-fit">
